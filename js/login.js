@@ -1,3 +1,15 @@
+function init(){ // 로그인 폼에 쿠키에서 가져온 아이디 입력
+    const emailInput = document.getElementById('typeEmailX');
+    const idsave_check = document.getElementById('idSaveCheck');
+    let get_id = getCookie("id");
+    if(get_id) {
+        emailInput.value = get_id;
+        idsave_check.checked = true;
+    }
+    session_check(); // 세션 유무 검사
+    init_failed_state(); // 실패 상태 초기화
+}
+
 const check_xss = (input) => {
     // DOMPurify 라이브러리 로드 (CDN 사용)
     const DOMPurify = window.DOMPurify;
@@ -13,69 +25,180 @@ const check_xss = (input) => {
    return sanitizedInput;
     };
 
-const check_input = () => {
-        const loginForm = document.getElementById('login_form');
-        const loginBtn = document.getElementById('login_btn');
-        const emailInput = document.getElementById('typeEmailX');
-        const passwordInput = document.getElementById('typePasswordX');
+function setCookie(name, value, expiredays) {
+    var date = new Date();
+    date.setDate(date.getDate() + expiredays);
+    document.cookie = `${escape(name)}=${escape(value)}; expires=${date.toUTCString()}; path=/`;
+}
     
-        const c = '아이디, 패스워드를 체크합니다';
-        alert(c);
-
-        const emailValue = emailInput.value.trim();
-        const passwordValue = passwordInput.value.trim();
-        const sanitizedPassword = check_xss(passwordInput);
-        // check_xss 함수로 비밀번호 Sanitize
-        const sanitizedEmail = check_xss(emailInput);
-        // check_xss 함수로 비밀번호 Sanitize
-
-        if (emailValue === '') {
-            alert('이메일을 입력하세요.');
-            return false;
+function getCookie(name) {
+    var cookie = document.cookie;
+    console.log("쿠키를 요청합니다.");
+    if (cookie !== "") {
+        var cookieArray = cookie.split("; ");
+        for (var index in cookieArray) {
+            var cookiePair = cookieArray[index].split("=");
+            if (cookiePair[0] === name) {
+                return unescape(cookiePair[1]);
+            }
         }
+    }
+    return null;
+}
 
-        if (passwordValue === '') {
-            alert('비밀번호를 입력하세요.');
-            return false;
-        }
+const BLOCK_TIME = 5 * 60 * 1000; // 5분 (밀리초 단위)
 
-        if (emailValue.length < 5) {
-            alert('아이디는최소5글자이상입력해야합니다.');
-            return false;
-        }
+function login_failed() {
+    let failCount = parseInt(getCookie('failCount')) || 0; // 실패 횟수 가져오기
+    let lastFailTime = parseInt(getCookie('lastFailTime')) || 0; // 마지막 실패 시간 가져오기
 
-        if (passwordValue.length < 12) {
-            alert('비밀번호는반드시12글자이상입력해야합니다.');
-            return false;
-        }
+    const now = new Date().getTime();
 
-        const hasSpecialChar = passwordValue.match(/[!,@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]+/) !== null;
+    // 블록 시간이 지났으면 실패 횟수 초기화
+    if (lastFailTime && (now - lastFailTime) > BLOCK_TIME) {
+        failCount = 0;
+        setCookie('failCount', failCount, 1); // 실패 횟수 초기화
+        setCookie('lastFailTime', now, 1); // 마지막 실패 시간 초기화
+    }
 
-        if (!hasSpecialChar) {
-            alert('패스워드는특수문자를1개이상포함해야합니다.');
-            return false;
-        }
+    failCount += 1; // 실패 횟수 증가
 
-        const hasUpperCase = passwordValue.match(/[A-Z]+/) !== null;
-        const hasLowerCase = passwordValue.match(/[a-z]+/) !== null;
+    // 실패 횟수와 마지막 실패 시간 쿠키에 저장
+    setCookie('failCount', failCount, 1);
+    setCookie('lastFailTime', now, 1);
 
-        if (!hasUpperCase || !hasLowerCase) {
-            alert('패스워드는대소문자를1개이상포함해야합니다.');
-            return false;
-        }
+    const statusElement = document.getElementById('status');
+    const loginButton = document.getElementById('login_btn');
 
-        if (!sanitizedEmail) {
-            // Sanitize된 비밀번호 사용
-            return false;
-        }
-        if (!sanitizedPassword) {
-            // Sanitize된 비밀번호 사용
-           return false;
-        }
+    if (failCount >= 3) {
+        // 로그인 제한 메시지 출력
+        statusElement.innerText = `로그인이 제한되었습니다. (실패 횟수: ${failCount})`;
+        statusElement.style.color = 'red';
+        // 로그인 버튼 비활성화
+        loginButton.disabled = true;
 
-        console.log('이메일:', emailValue);
-        console.log('비밀번호:', passwordValue);
-        loginForm.submit();
-    };
+        // 5분 뒤 버튼 활성화
+        setTimeout(() => {
+            loginButton.disabled = false;
+            statusElement.innerText = '로그인 제한이 해제되었습니다. 다시 시도하세요.';
+            statusElement.style.color = 'green';
+
+            // 실패 횟수 초기화
+            setCookie('failCount', 0, 1);
+            setCookie('lastFailTime', 0, 1);
+        }, BLOCK_TIME);
+    } else {
+        // 로그인 실패 메시지 출력
+        statusElement.innerText = `로그인 실패! (실패 횟수: ${failCount})`;
+        statusElement.style.color = 'red';
+    }
+}
+
+function init_failed_state() {
+    const failCount = parseInt(getCookie('failCount')) || 0;
+    const lastFailTime = parseInt(getCookie('lastFailTime')) || 0;
+    const now = new Date().getTime();
+    const statusElement = document.getElementById('status');
+    const loginButton = document.getElementById('login_btn');
+
+    if (failCount >= 3 && (now - lastFailTime) <= BLOCK_TIME) {
+        const remainingTime = Math.ceil((BLOCK_TIME - (now - lastFailTime)) / 60000);
+        statusElement.innerText = `로그인이 제한되었습니다. ${remainingTime}분 후 다시 시도하세요.`;
+        statusElement.style.color = 'red';
+        loginButton.disabled = true;
+
+        setTimeout(() => {
+            loginButton.disabled = false;
+            statusElement.innerText = '로그인 제한이 해제되었습니다. 다시 시도하세요.';
+            statusElement.style.color = 'green';
+            setCookie('failCount', 0, 1);
+            setCookie('lastFailTime', 0, 1);
+        }, BLOCK_TIME - (now - lastFailTime));
+    }
+}
+
+const check_input = () => {
+    const loginForm = document.getElementById('login_form');
+    const loginBtn = document.getElementById('login_btn');
+    const emailInput = document.getElementById('typeEmailX');
+    const passwordInput = document.getElementById('typePasswordX');
+
+    const c = '아이디, 패스워드를 체크합니다';
+    alert(c);
+
+    const emailValue = emailInput.value.trim();
+    const passwordValue = passwordInput.value.trim();
+    const sanitizedPassword = check_xss(passwordValue);
+    const sanitizedEmail = check_xss(emailValue);
+    const idsave_check = document.getElementById('idSaveCheck');
+
+    if (emailValue === '') {
+        alert('이메일을 입력하세요.');
+        login_failed(); // 로그인 실패 처리
+        return false;
+    }
+
+    if (passwordValue === '') {
+        alert('비밀번호를 입력하세요.');
+        login_failed(); // 로그인 실패 처리
+        return false;
+    }
+
+    if (emailValue.length < 5) {
+        alert('아이디는 최소 5글자 이상 입력해야 합니다.');
+        login_failed(); // 로그인 실패 처리
+        return false;
+    }
+
+    if (passwordValue.length < 12) {
+        alert('비밀번호는 반드시 12글자 이상 입력해야 합니다.');
+        login_failed(); // 로그인 실패 처리
+        return false;
+    }
+
+    const hasSpecialChar = passwordValue.match(/[!,@#$%^&*()_+\=\[\]{};':"\\|,.<>\/?]+/) !== null;
+
+    if (!hasSpecialChar) {
+        alert('패스워드는 특수문자를 1개 이상 포함해야 합니다.');
+        login_failed(); // 로그인 실패 처리
+        return false;
+    }
+
+    const hasUpperCase = passwordValue.match(/[A-Z]+/) !== null;
+    const hasLowerCase = passwordValue.match(/[a-z]+/) !== null;
+
+    if (!hasUpperCase || !hasLowerCase) {
+        alert('패스워드는 대소문자를 1개 이상 포함해야 합니다.');
+        login_failed(); // 로그인 실패 처리
+        return false;
+    }
+
+    if (!sanitizedEmail) {
+        return false;
+    }
+    if (!sanitizedPassword) {
+        return false;
+    }
+
+    // 검사 마무리 단계 쿠키 저장, 최하단 submit 이전
+    if (idsave_check.checked == true) { // 아이디 체크 o
+        alert("쿠키를 저장합니다.", emailValue);
+        setCookie("id", emailValue, 1); // 1일 저장
+        alert("쿠키 값 :" + emailValue);
+    } else { // 아이디 체크 x
+        setCookie("id", emailValue.value, 0); // 날짜를 0 - 쿠키 삭제
+    }
+
+    console.log('이메일:', emailValue);
+    console.log('비밀번호:', passwordValue);
+
+    // 로그인 성공 처리
+    const statusElement = document.getElementById('status');
+    statusElement.innerText = '로그인 성공!';
+    statusElement.style.color = 'green';
+
+    session_set(); // 세션 생성
+    loginForm.submit();
+};
 
     document.getElementById("login_btn").addEventListener('click', check_input);

@@ -76,11 +76,11 @@ function pop_up() {
        }
 
 function over(obj) {
-    obj.src="image/LOGO.png";
+    obj.src="../image/LOGO.png";
     }
 
 function out(obj) {
-    obj.src="image/LOGO2.jpg";
+    obj.src="../image/LOGO2.jpg";
     }
 
         /*const over =  (obj) =>{
