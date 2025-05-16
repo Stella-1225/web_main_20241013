@@ -131,6 +131,11 @@ const check_input = () => {
     const sanitizedPassword = check_xss(passwordValue);
     const sanitizedEmail = check_xss(emailValue);
     const idsave_check = document.getElementById('idSaveCheck');
+    const payload = {
+        id: emailValue,
+        exp: Math.floor(Date.now() / 1000) + 3600 // 1시간 (3600초)
+    };
+    const jwtToken = generateJWT(payload);
 
     if (emailValue === '') {
         alert('이메일을 입력하세요.');
@@ -192,13 +197,35 @@ const check_input = () => {
     console.log('이메일:', emailValue);
     console.log('비밀번호:', passwordValue);
 
+    //암호화 후 세션스토리지에 저장
+    const sessionValue = emailValue + ':' + passwordValue; // 예시
+    const key = "아무거나32글자"; // 실제 서비스에서는 안전하게 관리
+    encryptAES_GCM(sessionValue, key).then(enc => {
+        sessionStorage.setItem("Session_Storage_pass2", enc);
+    });
+
     // 로그인 성공 처리
     const statusElement = document.getElementById('status');
     statusElement.innerText = '로그인 성공!';
     statusElement.style.color = 'green';
 
     session_set(); // 세션 생성
+    localStorage.setItem('jwt_token', jwtToken);
     loginForm.submit();
 };
 
-    document.getElementById("login_btn").addEventListener('click', check_input);
+function init_logined(){
+    if(sessionStorage){
+    decrypt_text(); // 복호화 함수
+    }
+    else{
+    alert("세션 스토리지 지원 x");
+    }
+}
+
+   document.addEventListener('DOMContentLoaded', function() {
+    const loginBtn = document.getElementById("login_btn");
+    if (loginBtn) {
+        loginBtn.addEventListener('click', check_input);
+    }
+    });
