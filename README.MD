@@ -26,3 +26,8 @@ HTML 프로젝트- 깃허브
 
  ## 11주차 세션(암호화/복호화) 및 로그인 후 화면 개발 완료(문제 포함)
  로그인 후 페이지인 index_iogin.html에서 login_btn이 없어서 login.js에 있는 이벤트가 null를 가르켜서 오류 발생. 이 오류를 해결하기 위해 login.js에 있는 document.getElementById("login_btn").addEventListener('click', check_input); 이 코드를 버튼이 있을 때만 안전하게 이벤트가 연결되게 조건문을 만들어서 바꿔줌. 
+
+ ## 12주차 모듈화 및 회원가입 기능 개발 완료(문제 포함)
+11주차 응용 문제를 위해 만든 세션에 encryptAES_GCM 이 함수를 Import 하지 않아서 정상적으로 인식하지 못하는 문제 발생. -> encryptAES_GCM 이 함수를 만든 파일을 Import 해서 해결함.
+로그아웃 버튼이 먹히지 않는 문제가 발생해서 document.addEventListener('DOMContentLoaded', function() 이 부분에 // 로그아웃 버튼 이벤트 추가 (const logoutBtn = document.getElementById("logout_btn");)
+로그인 후 페이지에서 이미지 호버가 되지 않는 문제가 발생하여 index_login.html에 <script src="../js/js_popup.js"></script> 코드를 추가함.

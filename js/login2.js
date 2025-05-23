@@ -1,22 +1,11 @@
-import { session_set, session_get, session_get2, session_check } from './js_session.js';
+import { session_set, session_get, session_check } from './js_session.js';
 import { encrypt_text, decrypt_text } from './js_crypto.js';
 import { generateJWT, checkAuth } from './js_jwt_token.js';
 import { encryptAES_GCM } from './Crypto2.js';
 
-function init(){ // 로그인 폼에 쿠키에서 가져온 아이디 입력
-    const emailInput = document.getElementById('typeEmailX');
-    const idsave_check = document.getElementById('idSaveCheck');
-    let get_id = getCookie("id");
-    if(get_id) {
-        emailInput.value = get_id;
-        idsave_check.checked = true;
-    }
-    session_check(); // 세션 유무 검사
-    init_failed_state(); // 실패 상태 초기화
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    init(); 
+    checkAuth();
+    init_logined();
 });
 
 const check_xss = (input) => {
@@ -220,15 +209,6 @@ const check_input = () => {
 
     session_set(); // 세션 생성
     localStorage.setItem('jwt_token', jwtToken);
-
-    //회원가입 정보 복호화 및 콘솔 출력
-    const user = session_get2();
-    if (user) {
-        console.log("복호화된 회원가입 정보:", user);
-    } else {
-        console.log("회원가입 세션이 없습니다.");
-    }
-
     loginForm.submit();
 };
 
@@ -246,4 +226,16 @@ function init_logined(){
     if (loginBtn) {
         loginBtn.addEventListener('click', check_input);
     }
-    });
+
+    // 로그아웃 버튼 이벤트 추가
+    const logoutBtn = document.getElementById("logout_btn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            sessionStorage.clear();
+            localStorage.clear();
+            alert("로그아웃 되었습니다.");
+            window.location.href = "login.html"; // 로그인 페이지 경로에 맞게 수정
+        });
+    }
+});
