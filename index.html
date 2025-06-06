@@ -30,10 +30,10 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                                <a class="nav-link active" aria-current="page" href="https://www.leagueoflegends.com/de-de/">게임정보</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">Link</a>
+                                <a class="nav-link" href="#">링크</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -41,9 +41,9 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="https://www.riotgames.com/ko">라이엇 게임즈 공식 사이트</a></li>
-                                    <li><a class="dropdown-item" href="#">게시판</a></li>
+                                    <li><a class="dropdown-item" href="https://game.naver.com/lounge/League_of_Legends/home">게시판</a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="#">외부 링크</a></li>
+                                    <li><a class="dropdown-item" href="https://www.leagueoflegends.com/ko-kr/download">롤 다운로드</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item">
@@ -56,7 +56,7 @@
                         </form> -->
                         <form class="d-flex" role="search" onsubmit="return googleSearch();">
                             <input class="form-control me-2" id="search_input" name="q" type="search" placeholder="키워드 입력" aria-label="Search">
-                            <button id="search_btn" class="btn btn-outline-success" type="submit">검색하기</button>
+                            <button id="search_button_msg" class="btn btn-outline-success" type="submit">검색하기</button>
                         </form>
                     </div>
                     <a href="login/login.html" class="btn btn-outline-success" id="login_btn">로그인 하기</a>
@@ -79,11 +79,21 @@
                         }
                     </style>
                     <tr class="table-warning">
-                        <td width="80" rowspan="1">사이온</td>
-                        <td>아리</td>
-                        <td>가렌</td>
-                        <td>가렌2</td>
-                        <td>가렌3</td>
+                        <td rowspan="1"><img src="image/Sion.png" class="img-fluid" width="100" height="50">
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/sion/">사이온</a>
+                        </td>
+                        <td><img src="image/Ahri.jpeg" class="img-fluid" width="100" height="50">
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/ahri/">아리</a>
+                        </td>
+                        <td><img src="image/Garen.png" class="img-fluid" width="100" height="50">
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/garen/">가렌</a>
+                        </td>
+                        <td><img src="image/Seraphine.png" class="img-fluid" width="100" height="50">
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/seraphine/">세라핀</a>
+                        </td>
+                        <td><img src="image/Senna.png" class="img-fluid" width="100" height="50">
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/senna/">세나</a>
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="5">
@@ -91,12 +101,20 @@
                         </td>
                     </tr>
                     <tr>
-                        <td class="bg-primary"><b>카직스</b></td>
-                        <td>루시안</td>
-                        <td>루시안2</td>
+                        <td class="bg-secondary"><img src="image/Kha'Zix.png" class="img-fluid" width="100" height="50">
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/khazix/"><b>카직스</b></a>
+                        </td>
+                        <td><img src="image/Lucian.jpeg" class="img-fluid" width="100" height="50">
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/lucian/">루시안</a>
+                        </td>
+                        <td><img src="image/Yasuo.png" class="img-fluid" width="100" height="50">
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/yasuo/">야스오</a>
+                        </td>
                         <td colspan="2">
                             <img src="image/Vi.png" class="img-fluid" width="100" height="50">
-                            <font size="13">바이1, 2</font>
+                            <a href="https://www.leagueoflegends.com/ko-kr/champions/vi/">
+                                <font size="13">바이</font>
+                            </a>
                         </td>
                     </tr>
                 </tbody>

@@ -24,15 +24,16 @@ const check_xss = (input) => {
     const DOMPurify = window.DOMPurify;
     // 입력 값을 DOMPurify로 sanitize
     const sanitizedInput = DOMPurify.sanitize(input);
+    
     // Sanitized된 값과 원본 입력 값 비교
-   if (sanitizedInput !== input) {
-    // XSS 공격 가능성 발견 시 에러 처리
-   alert('XSS 공격 가능성이 있는 입력값을 발견했습니다.');
-    return false;
+    if (sanitizedInput !== input) {
+        // XSS 공격 가능성 발견 시 에러 처리
+        alert('XSS 공격 가능성이 있는 입력값을 발견했습니다.');
+        return false;
     }
     // Sanitized된 값 반환
-   return sanitizedInput;
-    };
+    return sanitizedInput;
+};
 
 function setCookie(name, value, expiredays) {
     var date = new Date();
@@ -126,6 +127,13 @@ function init_failed_state() {
     }
 }
 
+function login_count() {
+    let count = parseInt(getCookie("login_cnt")) || 0;
+    count += 1;
+    setCookie("login_cnt", count, 7); // 7일 저장
+    console.log("로그인 횟수:", count);
+}
+
 const check_input = () => {
     const loginForm = document.getElementById('login_form');
     const loginBtn = document.getElementById('login_btn');
@@ -158,14 +166,14 @@ const check_input = () => {
         return false;
     }
 
-    if (emailValue.length < 5) {
-        alert('아이디는 최소 5글자 이상 입력해야 합니다.');
+    if (emailValue.length < 5 || emailValue.length > 10) {
+        alert('아이디는 최소 5글자 이상, 10글자 이하로 입력해야 합니다.');
         login_failed(); // 로그인 실패 처리
         return false;
     }
 
-    if (passwordValue.length < 12) {
-        alert('비밀번호는 반드시 12글자 이상 입력해야 합니다.');
+    if (passwordValue.length < 12 || passwordValue.length > 15) {
+        alert('비밀번호는 반드시 12글자 이상, 15글자 이하로 입력해야 합니다.');
         login_failed(); // 로그인 실패 처리
         return false;
     }
@@ -186,6 +194,25 @@ const check_input = () => {
         login_failed(); // 로그인 실패 처리
         return false;
     }
+
+    //3글자 이상 반복 입력 검사
+    const threeCharRepeat = /(.{3,}?).*\1/.test(passwordValue);
+
+    if (threeCharRepeat) {
+        alert('3글자 이상 반복 입력은 허용되지 않습니다.');
+        login_failed();
+        return false;
+    }
+
+    //2글자 이상 반복 입력 검사
+    const twoDigitNumberRepeat = /(\d{2}).*\1/.test(passwordValue);
+
+    if (twoDigitNumberRepeat) {
+        alert('연속되는 숫자 2개 이상 반복 입력은 허용되지 않습니다.');
+        login_failed();
+        return false;
+    }
+
 
     if (!sanitizedEmail) {
         return false;
@@ -218,6 +245,8 @@ const check_input = () => {
     statusElement.innerText = '로그인 성공!';
     statusElement.style.color = 'green';
 
+    login_count();
+
     session_set(); // 세션 생성
     localStorage.setItem('jwt_token', jwtToken);
 
@@ -234,16 +263,17 @@ const check_input = () => {
 
 function init_logined(){
     if(sessionStorage){
-    decrypt_text(); // 복호화 함수
+        decrypt_text(); // 복호화 함수
     }
     else{
-    alert("세션 스토리지 지원 x");
+        alert("세션 스토리지 지원 x");
     }
 }
 
-   document.addEventListener('DOMContentLoaded', function() {
-    const loginBtn = document.getElementById("login_btn");
+document.addEventListener('DOMContentLoaded', function() {
+const loginBtn = document.getElementById("login_btn");
+
     if (loginBtn) {
         loginBtn.addEventListener('click', check_input);
     }
-    });
+});

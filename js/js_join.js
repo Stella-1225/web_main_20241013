@@ -17,11 +17,13 @@ function join(){ // 회원가입 기능
     if(name.value.length=== 0 || email.value.length=== 0 || password.value.length=== 0 || re_password.length=== 0){
         alert("회원가입 폼에 모든 정보를 입력해주세요.");
     }
+    
     if (!nameRegex.test(name.value)) { // 이름 검사
         alert("이름은 한글만 입력 가능합니다.");
         name.focus();
         return;
     }
+
     if (!emailRegex.test(email.value)) { // 이메일 검사
         alert("이메일 형식이 올바르지 않습니다.");
         email.focus();

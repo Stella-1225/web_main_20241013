@@ -25,15 +25,16 @@ function verifyJWT(token) { // 토큰 검증
         const signature = CryptoJS.HmacSHA256(`${encodedHeader}.${encodedPayload}`, JWT_SECRET);
         const calculatedSignature = CryptoJS.enc.Base64.stringify(signature);
         if (calculatedSignature !== encodedSignature) return null; // 서명 불일치
+
         // 3. 페이로드 파싱 및 만료 시간 검증
         const payload = JSON.parse(atob(encodedPayload)); // 디코딩 후 해석
         if (payload.exp < Math.floor(Date.now() / 1000)) { // 밀리초 단위
             console.log('보안 토큰이 만료되었습니다');
             return null;
         }
-            return payload; // 검증 성공
-        } catch (error) {
-            return null; // 파싱 오류 또는 기타 예외 처리
+        return payload; // 검증 성공
+    } catch (error) {
+        return null; // 파싱 오류 또는 기타 예외 처리
     }
 }
 

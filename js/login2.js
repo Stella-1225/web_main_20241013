@@ -1,4 +1,4 @@
-import { session_set, session_get, session_check } from './js_session.js';
+import { session_set, session_get, session_check, session_del } from './js_session.js';
 import { encrypt_text, decrypt_text } from './js_crypto.js';
 import { generateJWT, checkAuth } from './js_jwt_token.js';
 import { encryptAES_GCM } from './Crypto2.js';
@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     init_logined();
 });
+
+function logout_count() {
+    let count = parseInt(getCookie("logout_cnt")) || 0;
+    count += 1;
+    setCookie("logout_cnt", count, 7); // 7일 저장
+    console.log("로그아웃 횟수:", count);
+}
 
 const check_xss = (input) => {
     // DOMPurify 라이브러리 로드 (CDN 사용)
@@ -214,14 +221,23 @@ const check_input = () => {
 
 function init_logined(){
     if(sessionStorage){
-    decrypt_text(); // 복호화 함수
+        decrypt_text(); // 복호화 함수
     }
     else{
-    alert("세션 스토리지 지원 x");
+        alert("세션 스토리지 지원 x");
     }
 }
 
-   document.addEventListener('DOMContentLoaded', function() {
+// 로그아웃 함수
+function logout() {
+    session_del();
+    logout_count(); // 로그아웃 카운트 업데이트
+    alert("로그아웃 되었습니다.");
+    window.location.href = "../index.html"; // 로그인 페이지로 이동
+}
+
+// DOM이 완전히 로드된 후 실행
+document.addEventListener('DOMContentLoaded', function() {
     const loginBtn = document.getElementById("login_btn");
     if (loginBtn) {
         loginBtn.addEventListener('click', check_input);
@@ -230,12 +246,8 @@ function init_logined(){
     // 로그아웃 버튼 이벤트 추가
     const logoutBtn = document.getElementById("logout_btn");
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            sessionStorage.clear();
-            localStorage.clear();
-            alert("로그아웃 되었습니다.");
-            window.location.href = "login.html"; // 로그인 페이지 경로에 맞게 수정
+        logoutBtn.addEventListener('click', function () {
+            logout(); // 로그아웃 처리 함수 호출
         });
     }
 });

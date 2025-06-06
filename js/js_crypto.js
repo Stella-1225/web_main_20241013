@@ -31,6 +31,8 @@ export function decrypt_text(){
     const k = "key"; // 서버의 키
     const rk = k.padEnd(32, " "); // AES256은 key 길이가 32
     const eb = session_get();
+    if (!eb) return null;
     const b = decodeByAES256(rk, eb); // 실제 복호화
     console.log(b);
+    return b;
 }

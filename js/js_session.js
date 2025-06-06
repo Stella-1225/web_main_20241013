@@ -26,7 +26,7 @@ export function session_set(){ //세션 저장(객체)
     } else {
         alert("세션 스토리지 지원 x");
     }
- }
+}
 
  export function session_set2(obj){ //세션 저장(객체)
     let id = document.querySelector("#typeEmailX");
@@ -40,7 +40,7 @@ export function session_set(){ //세션 저장(객체)
     } else {
         alert("세션 스토리지 지원 x");
     }
- }
+}
 
 
 export function session_get() { //세션 읽기
@@ -57,6 +57,7 @@ export function session_get2() { // 회원가입 정보 복호화 반환
         const en_text = sessionStorage.getItem("Session_Storage_join");
         if (!en_text) return null;
         const objString = decrypt_text(en_text); // 복호화
+        if (!objString) return null;
         return JSON.parse(objString); // 객체로 변환
     } else {
         alert("세션 스토리지 지원 x");
@@ -71,7 +72,7 @@ export function session_check() { //세션 검사
     }
 }
 
-function session_del() {//세션 삭제
+export function session_del() {//세션 삭제
     if (sessionStorage) {
         sessionStorage.removeItem("Session_Storage_test");
         alert('로그아웃 버튼 클릭 확인 : 세션 스토리지를 삭제합니다.');
