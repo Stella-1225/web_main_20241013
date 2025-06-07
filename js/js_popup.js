@@ -79,11 +79,11 @@ function show_clock(){
 }
 
 function over(obj) {
-    obj.src="../image/1.png";
+    obj.src="../image/LOGO.png";
 }
 
 function out(obj) {
-    obj.src="../image/2.jpg";
+    obj.src="../image/LOGO2.jpg";
 }
 
         /*const over =  (obj) =>{
